@@ -70,10 +70,10 @@ while run:
         else:
             jump = False 
     if keys[pygame.K_LSHIFT] == 1:
-        speed+=0.5
+        speed=8
     else:
         speed=5
-    if hero_x < 0 or hero_x > 1060:
+    if hero_x < 0 or hero_x >= 1040:
         hero_x-=speed*move_x
     count=(hero_y_static-hero_y)//10
     c=font_h2.render(f'{count} m',True,(200,200,200))
