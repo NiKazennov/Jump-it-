@@ -17,6 +17,7 @@ slow=5
 rect = pygame.Rect(135, 220, 30, 30)
 
 hero_x=300
+vert_speed=0
 vol=1.0
 speed = 5
 jump = False
@@ -55,7 +56,8 @@ while run:
         if event.type == pygame.KEYDOWN: 
             if not jump and event.key == pygame.K_SPACE:
                 jump = True
-                jumpCount = jumpMax
+                vert_speed=15
+                vert_speed=jumpMax
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 pos = pygame.mouse.get_pos()
@@ -64,9 +66,9 @@ while run:
     move_x=keys[pygame.K_d] - keys[pygame.K_a]
     hero_x+=move_x*speed
     if jump:
-        hero_y -= jumpCount
-        if jumpCount > -jumpMax:
-            jumpCount -= 1
+        hero_y -= vert_speed
+        if vert_speed > -jumpMax:
+            vert_speed -= 1
         else:
             jump = False 
     if keys[pygame.K_LSHIFT] == 1:
