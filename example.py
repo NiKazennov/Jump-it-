@@ -43,11 +43,11 @@ class Frog:
         self.hero_x=hero_x
         self.hero_y=hero_y
         self.speed=speed
-        self.img=[]
+        self.img_list=[]
         self.vert_speed=vert_speed
         self.jumpMax=self.vert_speed
         self.slow=5
-        self.num_iter=6
+        self.num_iter=0
         self.num_frame = self.num_frame=num_iter//slow%6
     
     def jump(self):
@@ -69,7 +69,12 @@ class Frog:
         self.speed=8
 
     def show(self):
-        window.blit(self.img[self.num_frame] (self.hero_x, self.hero_y))
+        for i in range(6):
+            self.img=pygame.image.load(f"Frog/Frog_0-{i+1}.png.png")
+            self.img_list.append(self.img)
+            self.num_iter+=1
+            self.num_frame=num_iter//slow%6
+            window.blit(self.img_list[self.num_frame] (self.hero_x, self.hero_y))
 
 
 for i in range(6):
