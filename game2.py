@@ -20,6 +20,8 @@ font_h1 = pygame.font.SysFont('Calibri', 90)
 font_h2 = pygame.font.SysFont('Calibri', 50)
 font_h3 = pygame.font.SysFont('Calibri', 30, italic=True)
 font_h4=pygame.font.SysFont('Calibri', 15, italic=True)
+font_h5=pygame.font.SysFont('Calibri', 50,bold=True)
+font_info=pygame.font.SysFont('Calibri', 15,bold=True)
 h1 = font_h1.render("Jump it!", True, (226, 160, 46))
 h2 = font_h2.render("Start", True, (226, 160, 46))
 h3_1 = font_h3.render("Привет !", True, (226, 160, 46))
@@ -27,10 +29,11 @@ h3_2 = font_h3.render("Лягушку зовут Роспо", True, (226, 160, 4
 h3_3 = font_h3.render("Shift дает ускорение", True, (226, 160, 46))
 h3_4 = font_h3.render("Technoblade never dies!", True, (226, 160, 46))
 h3_5 = font_h3.render("Игра в разработке!", True, (226, 160, 46))
-h4 = font_h3.render("Спасибо за прохождение!", True, (226, 160, 46))
-info_1=font_h4.render("a и d - перемещение",True, (226, 160, 46))
-info_2=font_h4.render("пробел(space) - прыжок",True, (226, 160, 46))
-info_3=font_h4.render("??? - ускорение(ищите в советах)",True, (226, 160, 46))
+h5 = font_h5.render("Спасибо за прохождение!", True, (226, 160, 46))
+info_1=font_info.render("a и d - перемещение",True, (255,254,250))
+info_2=font_info.render("пробел(space) - прыжок",True, (255,254,250))
+info_3=font_info.render("??? - ускорение(ищите в советах)",True, (255,254,250))
+bg=pygame.image.load('bg_sky.jpg')
 
 
 clock = pygame.time.Clock()
@@ -60,6 +63,7 @@ button_w = 300
 button_h = 120
 button_x = 390
 button_y = 250
+max=0
 
 vol = 1.0
 pygame.mixer.music.set_volume(vol)
@@ -76,14 +80,14 @@ class Platform:
         
     def stay(self, hero_x, hero_y):
         global jump, vert_speed
-        if ( self.obj_y <= hero_y + 10 <= self.obj_y + 10 and self.obj_x <= hero_x <= self.obj_x + 50 ):
+        if ( self.obj_y <= hero_y + 10 <= self.obj_y + 10 and self.obj_x - 10<= hero_x <= self.obj_x + 60 ):
             jump = False      
             vert_speed = 0     
             return True
         return False
 
     def check_standing(self, hero_x, hero_y):
-        if (self.obj_y <= hero_y + 10 <= self.obj_y + 10 and  self.obj_x <= hero_x <= self.obj_x + 60):
+        if (self.obj_y <= hero_y + 10 <= self.obj_y + 10 and  self.obj_x -10 <= hero_x <= self.obj_x + 60):
             return True
         return False
 
@@ -106,11 +110,11 @@ class FinishSquare:
 
 platforms=[]
 for i in range(15):
-    platforms.append(Platform(randrange(150, 950,40), randrange(100, 500,40), 'Platform/Platform_0.png'))
+    platforms.append(Platform(randrange(150, 950,70), randrange(100, 490,70), 'Platform/Platform_0.png'))
 finish_square_1 = None
 
 selected_platform = randint(0, len(platforms)-1)
-finish_square_1 = FinishSquare('Coin.png',platforms[selected_platform].obj_x + 15,platforms[selected_platform].obj_y - 2)
+finish_square_1 = FinishSquare('Coin_new-1.png.png',platforms[selected_platform].obj_x + 15,platforms[selected_platform].obj_y - 15)
 
 for i in range(6):
     img = pygame.image.load(f'Frog/Frog_0-{i+1}.png.png')
@@ -156,7 +160,7 @@ while run:
     )
 
     if keys[pygame.K_LSHIFT]:
-        speed = 8
+        speed = 10
     else:
         speed = 5
 
@@ -176,7 +180,6 @@ while run:
             vert_speed=0
             jump is False
 
-
     for platform in platforms:
         if platform.stay(hero_x, hero_y): 
             break  
@@ -187,7 +190,7 @@ while run:
     
     if iteration%FPS == 0:
         game_time_sec+=1
-    c = font_h2.render(f"{count} м", True, (200, 200, 200))
+    c = font_h5.render(f"{count} м", True, (4,102,2))
 
 
     window.fill((0, 0, 0))  
@@ -214,7 +217,7 @@ while run:
             flag2 = True
             start_time = pygame.time.get_ticks()
     if flag2:
-        window.fill((0, 0, 64))  
+        window.blit(bg,(0,0))
         num_iter += 1
         num_iter2 += 1
         num_frame = num_iter // slow % 6
@@ -237,15 +240,17 @@ while run:
         if start_time:
             time_since_enter = abs(pygame.time.get_ticks() - start_time)
             if flag_ent_text:
-                message = 'Вы собрали монетку за ' + str(time_since_enter//1000) + 'сек'
+                message = 'Вы собрали монетку за ' + str(time_since_enter/1000) + ' сек'
             else:
-                message = 'Вы собрали монетку за ' + str(time_since_enter) + 'сек'
+                message = 'Вы собрали монетку за ' + str(time_since_enter/100) + ' сек'
+            if time_since_enter > max:
+                max=time_since_enter
         if finish_square_1.check_collected(hero_x, hero_y):
             window.fill((0,0,0))
-            window.blit(h4, (430, 200))
-            window.blit(font_h3.render(message,True,(226, 160, 46)),(430, 250))
+            window.blit(h5, (230, 250))
+            window.blit(font_h5.render(message,True,(226, 160, 46)),(200, 400))
             pygame.display.flip()
-            time.sleep(2)
+            time.sleep(3.5)
             pygame.quit()
 
 
