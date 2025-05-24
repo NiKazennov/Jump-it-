@@ -30,7 +30,7 @@ h3_5 = font_h3.render("Игра в разработке!", True, (226, 160, 46))
 h4 = font_h3.render("Спасибо за прохождение!", True, (226, 160, 46))
 info_1=font_h4.render("a и d - перемещение",True, (226, 160, 46))
 info_2=font_h4.render("пробел(space) - прыжок",True, (226, 160, 46))
-info_3=font_h4.render("???-ускорение(ищите в советах)",True, (226, 160, 46))
+info_3=font_h4.render("??? - ускорение(ищите в советах)",True, (226, 160, 46))
 
 
 clock = pygame.time.Clock()
@@ -42,7 +42,8 @@ hero_y = 520
 hero_y_static = 520
 random = randint(1, 5)
 FPS=120
-flag_ent=False
+flag_ent_text=False
+start_time=None
 
 jump = False
 speed=15
@@ -103,53 +104,13 @@ class FinishSquare:
 
 
 
-class Frog:
-    def __init__(self,hero_x,hero_y,speed,img,vert_speed,jumpMax,num_frame,slow,num_iter):
-        self.hero_x=hero_x
-        self.hero_y=hero_y
-        self.speed=speed
-        self.img_list=[]
-        self.vert_speed=vert_speed
-        self.jumpMax=self.vert_speed
-        self.slow=5
-        self.num_iter=0
-        self.num_frame = self.num_frame=num_iter//slow%6
-    
-    def jump(self):
-         self.hero_y -= self.vert_speed
-         if self.vert_speed > -self.jumpMax:
-            self.vert_speed -= 1
-         else:
-            jump = False 
-
-    def move_right(self):
-        if self.hero_x > 0:
-            self.hero_x-=self.speed
-
-    def move_left(self):
-        if self.hero_x < 1040:
-            self.hero_x+=self.speed
-
-    def faster(self):
-        self.speed=8
-
-    def show(self):
-        for i in range(6):
-            self.img=pygame.image.load(f"Frog/Frog_0-{i+1}.png.png")
-            self.img_list.append(self.img)
-            self.num_iter+=1
-            self.num_frame=num_iter//slow%6
-            window.blit(self.img_list[self.num_frame] (self.hero_x, self.hero_y))
-
-
-
 platforms=[]
 for i in range(15):
-    platforms.append(Platform(randrange(150, 950, 30), randrange(100, 500, 30), 'Platform/Platform_0.png'))
+    platforms.append(Platform(randrange(150, 950,40), randrange(100, 500,40), 'Platform/Platform_0.png'))
+finish_square_1 = None
 
-finish_square = None
 selected_platform = randint(0, len(platforms)-1)
-finish_square = FinishSquare('Coin.png',platforms[selected_platform].obj_x + 15,platforms[selected_platform].obj_y - 2)
+finish_square_1 = FinishSquare('Coin.png',platforms[selected_platform].obj_x + 15,platforms[selected_platform].obj_y - 2)
 
 for i in range(6):
     img = pygame.image.load(f'Frog/Frog_0-{i+1}.png.png')
@@ -166,7 +127,8 @@ iteration=0
 run = True
 while run:
     pygame.mixer.music.play(-1)
-    clock.tick(50)
+    clock.tick(60)
+    time_1=clock.get_time()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
@@ -177,6 +139,8 @@ while run:
             if event.key == pygame.K_RETURN:
                 flag2=True
                 flag1=False
+                start_time = pygame.time.get_ticks()
+                flag_ent_text=True
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 pos = pygame.mouse.get_pos()
@@ -248,6 +212,7 @@ while run:
     if flag1:
         if (button_x <= pos[0] <= button_x + button_w and button_y <= pos[1] <= button_y + button_h):
             flag2 = True
+            start_time = pygame.time.get_ticks()
     if flag2:
         window.fill((0, 0, 64))  
         num_iter += 1
@@ -264,14 +229,21 @@ while run:
             window.blit(img_list_right[num_frame], [hero_x, hero_y]) 
         if keys[pygame.K_a]:
             window.blit(img_list_left[num_frame2], [hero_x,hero_y])
-        window.blit(c, (500, 20))   
-        finish_square.draw()
+        window.blit(c, (500, 20))
+        finish_square_1.draw()
         window.blit(info_1,(10,10))
         window.blit(info_2,(10,30))
         window.blit(info_3,(10,50))
-        if finish_square.check_collected(hero_x, hero_y) == True:
+        if start_time:
+            time_since_enter = abs(pygame.time.get_ticks() - start_time)
+            if flag_ent_text:
+                message = 'Вы собрали монетку за ' + str(time_since_enter//1000) + 'сек'
+            else:
+                message = 'Вы собрали монетку за ' + str(time_since_enter) + 'сек'
+        if finish_square_1.check_collected(hero_x, hero_y):
             window.fill((0,0,0))
-            window.blit(h4, (430, 250))
+            window.blit(h4, (430, 200))
+            window.blit(font_h3.render(message,True,(226, 160, 46)),(430, 250))
             pygame.display.flip()
             time.sleep(2)
             pygame.quit()
